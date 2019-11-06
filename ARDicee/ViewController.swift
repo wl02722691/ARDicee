@@ -11,7 +11,7 @@ import SceneKit
 import ARKit
 
 class ViewController: UIViewController, ARSCNViewDelegate {
-
+    
     @IBOutlet var sceneView: ARSCNView!
     
     override func viewDidLoad() {
@@ -19,25 +19,32 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         sceneView.delegate = self
         
-//        let cube = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0.01)
+        //        let cube = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0.01)
         
-        let sphere = SCNSphere(radius: 0.2)
-        
-        let material = SCNMaterial()
-        
-        material.diffuse.contents = UIImage(named: "art.scnassets/moon.jpg")
-        
-        sphere.materials = [material]
-        
-        let node = SCNNode()
-        
-        node.position = SCNVector3(0, 0.1, -0.5)
-        
-        node.geometry = sphere
-        
-        sceneView.scene.rootNode.addChildNode(node)
+        //        let sphere = SCNSphere(radius: 0.2)
+        //
+        //        let material = SCNMaterial()
+        //
+        //        material.diffuse.contents = UIImage(named: "art.scnassets/moon.jpg")
+        //
+        //        sphere.materials = [material]
+        //
+        //        let node = SCNNode()
+        //
+        //        node.position = SCNVector3(0, 0.1, -0.5)
+        //
+        //        node.geometry = sphere
+        //
+        //        sceneView.scene.rootNode.addChildNode(node)
         
         sceneView.autoenablesDefaultLighting = true
+        
+        let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
+        
+        if let diceNode = diceScene.rootNode.childNode(withName: "Dice", recursively: true) {
+            diceNode.position = SCNVector3(0, 0, -0.1)
+            sceneView.scene.rootNode.addChildNode(diceNode)
+        }
         
     }
     
@@ -47,7 +54,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if ARWorldTrackingConfiguration.isSupported {
             // Create a session configuration
             let configuration = ARWorldTrackingConfiguration()
-
+            
             // Run the view's session
             sceneView.session.run(configuration)
             
@@ -57,7 +64,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             alert.addAction(okButton)
             self.present(alert, animated: true, completion: nil)
         }
-
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
