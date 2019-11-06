@@ -87,10 +87,15 @@ extension ViewController :ARSCNViewDelegate {
             
             let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
             
-            if !results.isEmpty {
-                print("touch plant")
-            } else {
-                print("somewhere else")
+            if let hitResult = results.first {
+                let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
+                
+                if let diceNode = diceScene.rootNode.childNode(withName: "Dice", recursively: true) {
+                    diceNode.position = SCNVector3(hitResult.worldTransform.columns.3.x,
+                                                   hitResult.worldTransform.columns.3.y + diceNode.boundingSphere.radius,
+                                                   hitResult.worldTransform.columns.3.z)
+                    sceneView.scene.rootNode.addChildNode(diceNode)
+                }
             }
         }
     }
