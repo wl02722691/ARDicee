@@ -14,6 +14,8 @@ class ViewController: UIViewController {
     
     @IBOutlet var sceneView: ARSCNView!
     
+    var diceArray = [SCNNode]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -77,6 +79,42 @@ class ViewController: UIViewController {
         // Pause the view's session
         sceneView.session.pause()
     }
+    
+    @IBAction func removeAllDice(_ sender: UIBarButtonItem) {
+        if !diceArray.isEmpty {
+            for dice in diceArray {
+                dice.removeFromParentNode()
+            }
+        }
+    }
+    
+    @IBAction func rollAgain(_ sender: UIBarButtonItem) {
+        rollAll()
+    }
+
+    func rollAll() {
+        if !diceArray.isEmpty {
+            for dice in diceArray{
+                roll(dice:dice)
+            }
+        }
+    }
+    
+    func roll(dice:SCNNode) {
+        let randomX = Float(arc4random()%4 + 1) * (Float.pi/2)
+        let randomZ = Float(arc4random()%4 + 1) * (Float.pi/2)
+        
+        dice.runAction(
+            SCNAction.rotateBy(x: CGFloat(randomX * 5),
+                               y: 0,
+                               z: CGFloat(randomZ * 5),
+                               duration: 0.5))
+    }
+    
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+           rollAll()
+    }
+
 }
 
 extension ViewController :ARSCNViewDelegate {
@@ -94,17 +132,12 @@ extension ViewController :ARSCNViewDelegate {
                     diceNode.position = SCNVector3(hitResult.worldTransform.columns.3.x,
                                                    hitResult.worldTransform.columns.3.y + diceNode.boundingSphere.radius,
                                                    hitResult.worldTransform.columns.3.z)
+                    
+                    diceArray.append(diceNode)
+                    
                     sceneView.scene.rootNode.addChildNode(diceNode)
-                    
-                    let randomX = Float(arc4random()%4 + 1) * (Float.pi/2)
-                    let randomZ = Float(arc4random()%4 + 1) * (Float.pi/2)
-                    
-                    diceNode.runAction(
-                        SCNAction.rotateBy(x: CGFloat(randomX * 5),
-                                           y: 0,
-                                           z: CGFloat(randomZ * 5),
-                                           duration: 0.5))
-                    
+                     
+                    roll(dice: diceNode)
                 }
             }
         }
